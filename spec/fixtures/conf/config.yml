@@ -1,0 +1,13 @@
+development:
+  radio_indexer_cache: ['127.0.0.1:11211']
+  index_cache: ['127.0.0.1:11211']
+  main_cache: ['127.0.0.1:11211']
+  redis_host: '127.0.0.1'
+  redis_port: 6389
+  http_procs: 1
+  workers: 1
+  port: 3000
+  run_as: reco
+  pid: logs/run/
+  logs: logs/nutsie_radio
+  rotate: daily

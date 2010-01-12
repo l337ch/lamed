@@ -1,0 +1,2 @@
+class BarRecord < MySQL
+end

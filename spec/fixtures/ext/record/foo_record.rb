@@ -1,0 +1,2 @@
+class FooRecord < MySQL
+end
