@@ -4,7 +4,6 @@ require 'optparse'
 require 'memcached'
 require 'cgi'
 require 'lib/lamed/helper'
-require 'lib/lamed/mustache'
 require 'lib/lamed/object_loader'
 
 module Lamed

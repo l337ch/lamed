@@ -7,7 +7,6 @@ require 'rack'
 require "lib/lamed/helper"
 require 'lib/lamed/lib'
 require 'lib/lamed/record'
-require 'lib/lamed/mustache'
 require 'lib/lamed/controller'
 require "lib/lamed/object_loader"
 

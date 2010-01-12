@@ -5,12 +5,13 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "lamed"
-    gem.summary = %Q{Get LaMed}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Get LaMeD}
+    gem.description = %Q{Yet another LaMe Ruby Web Framework}
     gem.email = "leetchang@gmail.com"
     gem.homepage = "http://github.com/onemorehill/lamed"
     gem.authors = ["Lee Chang"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    gem.add_development_dependency "rack", ">= 1.0"
+    gem.add_development_dependency "mustache", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
