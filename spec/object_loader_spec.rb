@@ -76,7 +76,7 @@ module Lamed
       load 'lib/lamed/object_loader.rb'
       subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest",
                           ["bar.rb", "foo.rb"]
-      ObjectLoader.load_new_object_into_klass(subdir, file_name)
+      ObjectLoader.load_controller_into_new_class(subdir, file_name)
       Object::Lamed::Controller::Lamest.constants.should == [:Bar, :Foo]
       Object::Lamed::Controller::Lamest::Foo.class.should == Class
     end
@@ -92,7 +92,7 @@ module Lamed
     end
     
     it "should load up controllers" do
-      ObjectLoader.load_new_objects(:controller)
+      ObjectLoader.load_controller_object
       Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
       Lamed::Controller.constants.sort.should == [:Adapter, :Auth, :Builder, :Cascade, :Chunked, :CommonLogger,
                                                   :ConditionalGet, :ContentLength, :ContentType, :Context, :ContextMiss,
@@ -104,8 +104,8 @@ module Lamed
       Lamed::Controller::Lamest.constants.should == [:Bar, :Foo]
     end
     
-    it "should load up records" do
-      ObjectLoader.load_new_objects(:model)
+    it "should load up models" do
+      ObjectLoader.load_model_object
       Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
       Lamed::Model.constants.should == [:BarModel, :FooModel]
     end

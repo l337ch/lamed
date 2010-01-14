@@ -69,21 +69,21 @@ module Lamed
     end
     
     def load_lib
-      Dir[ROOT + '/lib/**/*.rb'].each {|d| load d}
+      Dir[ROOT + '/lib/**/*.rb'].each {|f| load f}
     end
     
     def load_controller
-      ObjectLoader.load_new_objects(:controller)
+      ObjectLoader.load_controller_object
     end
     
-    def load_record
-     ObjectLoader.load_new_objects(:model)
+    def load_model
+     ObjectLoader.load_model_object
     end
     
   end
   
   if defined?(SYS_OPTIONS)
-    load_record
+    load_model
     require 'lib/lamed/controller'
     load_controller
     load_lib

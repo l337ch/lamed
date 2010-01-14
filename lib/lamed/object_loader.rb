@@ -82,12 +82,12 @@ module Lamed
         return view_path
       end
     
-      # Load new object(s) into new klass(es) as defined by their path.
+      # Load new controller(s) into new klass(es) as defined by their path.
       # First load the files then build the class/modules(klass) from the path.
       # Then move the newly created objects into the newly built klass.
       # Finally, remove the newly loaded objects from Object.
       # Change the path= for controllers to the location of the mustache templates. 
-      def load_new_object_into_klass(subdir, file_name)
+      def load_controller_into_new_class(subdir, file_name)
         orig_object_constants = Object.constants.dup
         load_new_object(subdir, file_name)
         camelized_ext_subdir = camelize_ext_subdir(subdir)
@@ -116,12 +116,25 @@ module Lamed
         @mapped_class[path] = eval(klass_str)
       end
       
-      def load_new_objects(type)
-        get_files(type)
+      def load_controller_object
+        get_files(:controller)
         map_file_to_subdir
-        @mapped_file.each_pair { |subdir, file_name| load_new_object_into_klass(subdir, file_name) }
+        @mapped_file.each_pair { |subdir, file_name| load_controller_into_new_class(subdir, file_name) }
       end
-    
+      
+      # Load model(s)
+      def load_model_object
+        orig_object_constants = Object.constants.dup
+        klass = Lamed::Model
+        get_files(:model)
+        @paths.each { |f| load f }
+        (Object.constants - orig_object_constants).each do |o|
+          o_klass = Object.const_get(o)
+          klass.const_set(o, o_klass)
+          Object.instance_eval { remove_const o }
+        end
+      end
+          
     end
     
   end
