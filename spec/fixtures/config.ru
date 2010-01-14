@@ -4,10 +4,10 @@ $LOAD_PATH.unshift(lame_path) unless $LOAD_PATH.include?(lame_path)
 
 require 'lib/lamed'
 
-# Don't remove this unless you want to manually mapp HTTP PATH_INFO to your controllers.
+# Don't remove this unless you want to manually map HTTP['PATH_INFO'] to your controllers.
 run_apps
 
 # Add your custom url mappings here
-# map "/hello_world" do
+# map "/hello" do
 #   run HelloWorld.new 
 # end

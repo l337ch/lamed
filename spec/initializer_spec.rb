@@ -12,14 +12,15 @@ module Lamed
       Lamed.logger.level.should == 0
     end
     
-    it "should initialize the Controller and Record objects" do
-      Lamed::Record.constants.should == [:BarRecord, :FooRecord]
-      Lamed::Controller.constants.should == [:FirstController, :Second, :BarRecord, :FooRecord, :VERSION, :Builder, :Cascade,
-                                            :Chunked, :CommonLogger, :ConditionalGet, :ContentLength, :ContentType, :File,
-                                            :Deflater, :Directory, :ForwardRequest, :Handler, :Head, :Lint, :Lock,
-                                            :MethodOverride, :Mime, :Recursive, :Reloader, :ShowExceptions, :ShowStatus,
-                                            :Static, :URLMap, :Utils, :MockRequest, :MockResponse, :Request, :Response, :Auth,
-                                            :Session, :Adapter, :Template, :ContextMiss, :Context]
+    it "should initialize the Controller, Lib, and Model objects" do
+      Lamed::Model.constants.should == [:BarModel, :FooModel]
+      Lamed::Controller.constants.sort.should == [:HelloWorld, :Lamest, :BarModel, :FooModel, :VERSION, :Cascade, :Chunked,
+                                             :ConditionalGet, :ContentLength, :ContentType, :File, :Deflater, :Directory,
+                                             :ForwardRequest, :Handler, :Head, :Lint, :Lock, :MethodOverride, :Mime,
+                                             :Recursive, :Reloader, :ShowStatus, :Static, :URLMap, :MockRequest,
+                                             :MockResponse, :Response, :Auth, :Session, :Adapter, :Builder, :CommonLogger,
+                                             :Utils, :Request, :ShowExceptions, :Template, :ContextMiss, :Context].sort
+      Object.constants.include?(:FooLib).should == true
     end
     
   end

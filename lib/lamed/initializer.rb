@@ -28,7 +28,7 @@ module Lamed
       @sys_options = SYS_OPTIONS 
       log_path =@sys_options[:logs] || OPTIONS[:log_path]
       OPTIONS[:rotate] = !@sys_options.nil? ? @sys_options[:rotate] : nil
-      OPTIONS[:log] = File.join(log_path, OPTIONS[:env].to_s ,".log")
+      @log_path = File.join(log_path, OPTIONS[:env].to_s  + ".log")
     end
   end
   
@@ -37,21 +37,24 @@ module Lamed
     # Set up logging
     def initialize_logger
       if defined?(SYS_OPTIONS)
-        logs = Logger.new(@log_path, OPTIONS[:rotate])
-        case OPTIONS[:env]
-        when :development
-          logs.level = Logger::DEBUG
-        when :test
-          logs.level = Logger::DEBUG
-        when :staging
-          logs.level = Logger::DEBUG
-        when :production
-          logs.level = Logger::WARN
+        begin
+          logs = Logger.new(@log_path, OPTIONS[:rotate])
+          case OPTIONS[:env]
+          when :development
+            logs.level = Logger::DEBUG
+          when :test
+            logs.level = Logger::DEBUG
+          when :staging
+            logs.level = Logger::DEBUG
+          when :production
+            logs.level = Logger::WARN
+          end
+        rescue
+          puts "The log path #{@log_path} does not exist or is not writable."
+          puts "Log messages will be sent to STANDARD ERROR"
+          logs = Logger.new(STDERR)
         end
-      else
-        logs = Logger.new(STDERR)
       end
-      puts "The log path does not exist or is not writable.  Log messages will be sent to STANDARD ERROR"
       @logger = logs
       logs.warn("Logging level is set to #{logs.level}")
       return @logger
@@ -59,7 +62,6 @@ module Lamed
     
     if defined?(ROOT)
       require 'lib/lamed/model'
-      require 'lib/lamed/lib'
     end
 
     def logger
@@ -67,10 +69,7 @@ module Lamed
     end
     
     def load_lib
-      #Dir[LAME_ROOT + '/lib/*.rb'].each {|d| require d}
-      lib = LoadObjects.new(ROOT, :lib)
-      lib.build_path_hash
-      lib.build_objects
+      Dir[ROOT + '/lib/**/*.rb'].each {|d| load d}
     end
     
     def load_controller
@@ -78,7 +77,7 @@ module Lamed
     end
     
     def load_record
-      ObjectLoader.load_new_objects(:model)
+     ObjectLoader.load_new_objects(:model)
     end
     
   end
@@ -87,6 +86,7 @@ module Lamed
     load_record
     require 'lib/lamed/controller'
     load_controller
+    load_lib
   end
   initialize_logger
 

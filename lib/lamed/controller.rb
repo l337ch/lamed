@@ -8,7 +8,6 @@ module Lamed
     include Lamed::Helper
     extend Lamed::Helper
     include Lamed::Model
-    include Lamed::Lib
               
     attr_accessor :query, :path, :self_path, :env
   
@@ -40,10 +39,10 @@ module Lamed
     end
   
     def call(env)
+      @env = env
       env[:query] = self.parse_query_string(env['QUERY_STRING'])
       env[:path] = self.parse_uri(env['SCRIPT_NAME'])
       response(env)
-      @env = env
       resp = @req_params
       status_code = resp[:status_code] || 200
       content_type = resp[:content_type] || "text/html"

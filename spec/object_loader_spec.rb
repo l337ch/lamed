@@ -5,7 +5,6 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 require 'mustache'
 require 'rack'
 require "lib/lamed/helper"
-require 'lib/lamed/lib'
 require 'lib/lamed/model'
 require 'lib/lamed/controller'
 require "lib/lamed/object_loader"
@@ -94,7 +93,7 @@ module Lamed
     
     it "should load up controllers" do
       ObjectLoader.load_new_objects(:controller)
-      Lamed.constants.should == [:Helper, :Lib, :Model, :Controller, :ObjectLoader]
+      Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
       Lamed::Controller.constants.sort.should == [:Adapter, :Auth, :Builder, :Cascade, :Chunked, :CommonLogger,
                                                   :ConditionalGet, :ContentLength, :ContentType, :Context, :ContextMiss,
                                                   :Deflater, :Directory, :File, :ForwardRequest, :Handler, :Head, 
@@ -107,7 +106,7 @@ module Lamed
     
     it "should load up records" do
       ObjectLoader.load_new_objects(:model)
-      Lamed.constants.should == [:Helper, :Lib, :Model, :Controller, :ObjectLoader]
+      Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
       Lamed::Model.constants.should == [:BarModel, :FooModel]
     end
     
