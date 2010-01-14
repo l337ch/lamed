@@ -1,2 +1,0 @@
-class FooModel < MySQL
-end

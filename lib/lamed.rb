@@ -1,8 +1,8 @@
 lib_path = File.expand_path(File.dirname(__FILE__)) + "/../"
 $LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
-
 LAME_ROOT = File.expand_path(File.dirname(__FILE__)) unless defined?(LAME_ROOT)
 
+puts "This is self under Lamed #{self}"
 require 'lib/lamed/main'
 
 module Lamed

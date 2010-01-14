@@ -93,7 +93,7 @@ module Lamed
     
     it "should load up controllers" do
       ObjectLoader.load_controller_object
-      Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
+      Lamed.constants.should == [:Helper, :Model, :MySQL, :Controller, :ObjectLoader]
       Lamed::Controller.constants.sort.should == [:Adapter, :Auth, :Builder, :Cascade, :Chunked, :CommonLogger,
                                                   :ConditionalGet, :ContentLength, :ContentType, :Context, :ContextMiss,
                                                   :Deflater, :Directory, :File, :ForwardRequest, :Handler, :Head, 
@@ -106,7 +106,7 @@ module Lamed
     
     it "should load up models" do
       ObjectLoader.load_model_object
-      Lamed.constants.should == [:Helper, :Model, :Controller, :ObjectLoader]
+      Lamed.constants.should == [:Helper, :Model, :MySQL, :Controller, :ObjectLoader]
       Lamed::Model.constants.should == [:BarModel, :FooModel]
     end
     

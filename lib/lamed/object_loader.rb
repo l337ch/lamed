@@ -2,17 +2,17 @@ ROOT = ::File.join(::File.dirname(__FILE__), '..') unless defined?(ROOT)
 
 module Lamed
     
-  class ObjectLoader < Rack::Builder
+  class ObjectLoader
     
     ORIG_OBJECT_CONSTANTS = Object.constants.freeze
     ROOT_EXT     = File.join(ROOT, "/ext")
-    VIEW_PATH    = File.join(ROOT_EXT, "/view")
-    FILE_PATTERN = "**/*.rb"
+    VIEW_PATH    = File.join(ROOT_EXT, "/views")
+    file_pattern = "**/*.rb"
     
     FILE_FILTER = {
-      :model      => File.join(ROOT_EXT, "/model", FILE_PATTERN),
-      :controller => File.join(ROOT_EXT, "/controller", FILE_PATTERN),
-      :view       => File.join(ROOT_EXT, "/view", FILE_PATTERN)
+      :model      => File.join(ROOT_EXT, "/models", file_pattern),
+      :controller => File.join(ROOT_EXT, "/controllers", file_pattern),
+      :view       => File.join(ROOT_EXT, "/views", file_pattern)
     }
     
     APP = Rack::Builder.new {
