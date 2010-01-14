@@ -3,7 +3,7 @@ require 'lib/lamed/redis'
 
 module Lamed
   
-  module Record
+  module Model
     
     #include Lamed
     

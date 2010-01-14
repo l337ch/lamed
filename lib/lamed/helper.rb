@@ -1,7 +1,7 @@
 module Lamed
   
   module Helper
-          
+    
     # -=-=-=-= Hash Helper =-=-=-=-
     # Changes keys that are strings in symbols.  Goes two deep.
     def symbolize_hash_keys(hash = self)
@@ -38,6 +38,12 @@ module Lamed
       path = uncameled_path.join("/").insert(0, "/")
       return path
     end
+    
+    def class_to_path(klass)
+      klass_str = klass.to_s.split("::").collect { |s| uncamelize_string s }
+      klass_path = File.join("/", klass_str)
+      return klass_path
+    end      
     
     # Convert strings into a usable MySQL time object.
     def mysql_time(str)

@@ -1,3 +1,5 @@
+require 'mustache'
+
 module Lamed
   
   class Controller < Mustache
@@ -5,7 +7,7 @@ module Lamed
     include Rack
     include Lamed::Helper
     extend Lamed::Helper
-    include Lamed::Record
+    include Lamed::Model
     include Lamed::Lib
               
     attr_accessor :query, :path, :self_path, :env
@@ -41,6 +43,7 @@ module Lamed
       env[:query] = self.parse_query_string(env['QUERY_STRING'])
       env[:path] = self.parse_uri(env['SCRIPT_NAME'])
       response(env)
+      @env = env
       resp = @req_params
       status_code = resp[:status_code] || 200
       content_type = resp[:content_type] || "text/html"
@@ -56,8 +59,12 @@ module Lamed
      return @req_params
     end
   
-    def content_type(string)
-      @req_params[:content_type] = string
+    def content_type(content_type)
+      @req_params[:content_type] = content_type
+    end
+    
+    def user_agent
+      @env['HTTP_USER_AGENT']
     end
   
   end

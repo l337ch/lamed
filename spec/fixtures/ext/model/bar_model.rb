@@ -1,0 +1,2 @@
+class BarModel < MySQL
+end

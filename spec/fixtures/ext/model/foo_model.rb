@@ -1,0 +1,2 @@
+class FooModel < MySQL
+end

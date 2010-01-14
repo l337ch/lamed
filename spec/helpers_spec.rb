@@ -1,6 +1,13 @@
 require File.join(File.dirname(__FILE__), "spec_helper")
 require File.join(File.dirname(__FILE__), '..', '/lib/lamed/helper')
 
+module Foo
+  module Bar
+    module Har
+    end
+  end
+end
+
 module Lamed
   
   include Helper
@@ -45,6 +52,14 @@ module Lamed
       string = "2009-01-01 00:00:00"
       date = mysql_time string
       date.to_i.should == 1230796800
+    end
+  end
+  
+  describe "Convert a class to a path string" do
+    it "should build a path string from a class" do
+      klass = Foo::Bar::Har 
+      path = class_to_path klass
+      path.should == "/foo/bar/har"
     end
   end
   

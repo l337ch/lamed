@@ -2,29 +2,37 @@ ROOT = ::File.join(::File.dirname(__FILE__), '..') unless defined?(ROOT)
 
 module Lamed
     
-  class ObjectLoader
+  class ObjectLoader < Rack::Builder
     
+    ORIG_OBJECT_CONSTANTS = Object.constants.freeze
+    ROOT_EXT     = File.join(ROOT, "/ext")
+    VIEW_PATH    = File.join(ROOT_EXT, "/view")
+    FILE_PATTERN = "**/*.rb"
+    
+    FILE_FILTER = {
+      :model      => File.join(ROOT_EXT, "/model", FILE_PATTERN),
+      :controller => File.join(ROOT_EXT, "/controller", FILE_PATTERN),
+      :view       => File.join(ROOT_EXT, "/view", FILE_PATTERN)
+    }
+    
+    APP = Rack::Builder.new {
+      use Rack::CommonLogger
+      use Rack::ShowExceptions
+      }
+      
     class << self
       
-      include Lamed::Helper
-      extend Lamed::Helper
+      include Lamed
+      include Helper
+      extend Helper
+      
+      attr_reader :mapped_class
       
       # Load objects in this order:
       #  Libraries - Lib
-      #  Records or models - Record
+      #  Records or models - Model
       #  Controllers or apps - Controller
-      
-      ORIG_OBJECT_CONSTANTS = Object.constants.freeze
-      ROOT_EXT     = File.join(ROOT, "/ext")
-      VIEW_PATH    = File.join(ROOT_EXT, "/view")
-      FILE_PATTERN = "**/*.rb"
-      
-      FILE_FILTER = {
-        :record     => File.join(ROOT_EXT, "/record", FILE_PATTERN),
-        :controller => File.join(ROOT_EXT, "/controller", FILE_PATTERN),
-        :view       => File.join(ROOT_EXT, "/view", FILE_PATTERN)
-      }
-    
+        
       def get_files(type)
         @paths = Dir.glob(FILE_FILTER[type])
       end
@@ -85,13 +93,27 @@ module Lamed
         camelized_ext_subdir = camelize_ext_subdir(subdir)
         klass = create_object_from_camelized_path(camelized_ext_subdir)
         view_path = create_view_path(camelized_ext_subdir)
-        (Object.constants - orig_object_constants).each { |o|
+        (Object.constants - orig_object_constants).each do |o|
           o_klass = Object.const_get(o)
           # Change path to mustache path location if it has the path method (Check for a Controller object)
-          o_klass.path = create_view_path(camelized_ext_subdir) if o_klass.respond_to?('path')
+          o_klass.path = create_view_path(camelized_ext_subdir) if o_klass.respond_to?(:path)
           klass.const_set(o, o_klass)
-          Object.instance_eval { remove_const o } 
-        }
+          Object.instance_eval { remove_const o }
+          complete_klass_str = klass.to_s + "::" + o_klass.to_s
+          map_new_class(complete_klass_str) if o_klass.respond_to?(:path)
+        end
+      end
+      
+      # Create a new map for the Controller using Rack::Builder map      
+      def map_new_class(klass_str)
+        path_prime = File.join(klass_str.split('::').collect { |s| uncamelize_string s })
+        path = path_prime.split('/controller').last
+        map_class_to_path(path, klass_str)
+      end
+      
+      def map_class_to_path(path, klass_str)
+        @mapped_class = Hash.new unless defined?(@mapped_class)
+        @mapped_class[path] = eval(klass_str)
       end
       
       def load_new_objects(type)

@@ -58,7 +58,7 @@ module Lamed
     end
     
     if defined?(ROOT)
-      require 'lib/lamed/record'
+      require 'lib/lamed/model'
       require 'lib/lamed/lib'
     end
 
@@ -78,7 +78,7 @@ module Lamed
     end
     
     def load_record
-      ObjectLoader.load_new_objects(:record)
+      ObjectLoader.load_new_objects(:model)
     end
     
   end
