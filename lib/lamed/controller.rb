@@ -1,7 +1,6 @@
 require 'mustache'
 
 module Lamed
-  
   class Controller < Mustache
     
     include Rack
@@ -65,7 +64,5 @@ module Lamed
     def user_agent
       @env['HTTP_USER_AGENT']
     end
-  
   end
-    
 end

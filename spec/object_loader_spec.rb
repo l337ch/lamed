@@ -1,5 +1,5 @@
 LAME_ROOT =  File.join(File.dirname(__FILE__), '..')
-ROOT = File.join(LAME_ROOT, "/spec/fixtures")
+ROOT = File.join(LAME_ROOT, "/spec/examples")
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 require 'mustache'
@@ -13,11 +13,11 @@ module Lamed
     
   describe "Load Objects into a tree" do
     it "should find all record files within a subdir" do
-      record_result     = ["/usr/pub/projects/lamed/spec/../spec/fixtures/ext/model/bar_model.rb",
-                           "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/model/foo_model.rb"]
-      controller_result = ["/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/hello_world.rb",
-                           "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest/bar.rb",
-                           "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest/foo.rb"]
+      record_result     = ["/usr/pub/projects/lamed/spec/../spec/examples/ext/models/bar_model.rb",
+                           "/usr/pub/projects/lamed/spec/../spec/examples/ext/models/foo_model.rb"]
+      controller_result = ["/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/hello_world.rb",
+                           "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest/bar.rb",
+                           "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest/foo.rb"]
       record_paths = ObjectLoader.get_files(:model)
       controller_paths = ObjectLoader.get_files(:controller)
       record_paths.should == record_result
@@ -25,29 +25,29 @@ module Lamed
     end
   
     it "should group subdirs together given a path" do
-      @paths = ["/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/hello_world.rb",
-                    "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest/foo.rb",
-                    "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest/bar.rb"]
-      result = {"/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller"=>["hello_world.rb"],
-                "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest"=>["bar.rb", "foo.rb"]}
+      @paths = ["/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/hello_world.rb",
+                    "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest/foo.rb",
+                    "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest/bar.rb"]
+      result = {"/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers"=>["hello_world.rb"],
+                "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest"=>["bar.rb", "foo.rb"]}
       mapped_file = ObjectLoader.map_file_to_subdir
       mapped_file.should == result
     end
 
     it "should get the camelized ext sub directory" do
-      subdir = "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/second"
+      subdir = "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/second"
       ext_subdir = ObjectLoader.camelize_ext_subdir(subdir)
-      ext_subdir.should == [:Controller, :Second]
+      ext_subdir.should == [:Second]
     end
     
     it "should load path symbols as objects" do
-      camelized_path = [:Controller, :Second]
+      camelized_path = [:Second]
       klass = ObjectLoader.create_object_from_camelized_path(camelized_path)
       klass.should == Lamed::Controller::Second
     end
     
     it "should create new Controller objects from files" do
-      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest", 
+      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest", 
                           ["bar.rb", "foo.rb"]                          
       new_objects = ObjectLoader.load_new_object(subdir, file_name)
       Object.constants.include?(:Foo).should == true
@@ -57,7 +57,7 @@ module Lamed
     end
     
     it "should create new Record Objects from files" do
-      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/model",
+      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/examples/ext/models",
                           ["foo_model.rb", "bar_model.rb"]
       new_objects = ObjectLoader.load_new_object(subdir, file_name)
       Object.constants.include?(:FooModel).should == true
@@ -67,14 +67,14 @@ module Lamed
     end
     
     it "should create a new view path for the new class" do
-      camelized_ext_subdir = [:Controller, :Second]
+      camelized_ext_subdir = [:Lamest, :Foo]
       view_path = ObjectLoader.create_view_path(camelized_ext_subdir)
-      view_path.should == "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/view/second"
+      view_path.should == "/usr/pub/projects/lamed/spec/../spec/examples/ext/views/lamest/foo"
     end
       
     it "should move new objects to new Lamed class/modules" do
       load 'lib/lamed/object_loader.rb'
-      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/fixtures/ext/controller/lamest",
+      subdir, file_name = "/usr/pub/projects/lamed/spec/../spec/examples/ext/controllers/lamest",
                           ["bar.rb", "foo.rb"]
       ObjectLoader.load_controller_into_new_class(subdir, file_name)
       Object::Lamed::Controller::Lamest.constants.should == [:Bar, :Foo]
@@ -82,13 +82,13 @@ module Lamed
     end
     
     it "should check to see if new objects were removed from Object" do
-      Object.constants.include?(:SecondController).should == false
-      Object.constants.include?(:ThirdController).should == false
+      Object.constants.include?(:Foo).should == false
+      Object.constants.include?(:Bar).should == false
     end
     
     it "should check the view path for the new objects" do
-      Object::Lamed::Controller::Lamest::Bar.path.should == "/usr/pub/projects/lamed/spec/fixtures/ext/view/lamest"
-      Object::Lamed::Controller::Lamest::Foo.path.should == "/usr/pub/projects/lamed/spec/fixtures/ext/view/lamest"
+      Object::Lamed::Controller::Lamest::Bar.path.should == "/usr/pub/projects/lamed/spec/examples/ext/views/lamest"
+      Object::Lamed::Controller::Lamest::Foo.path.should == "/usr/pub/projects/lamed/spec/examples/ext/views/lamest"
     end
     
     it "should load up controllers" do

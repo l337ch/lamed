@@ -1,7 +1,6 @@
 ROOT = ::File.join(::File.dirname(__FILE__), '..') unless defined?(ROOT)
 
 module Lamed
-    
   class ObjectLoader
     
     ORIG_OBJECT_CONSTANTS = Object.constants.freeze
@@ -14,11 +13,6 @@ module Lamed
       :controller => File.join(ROOT_EXT, "/controllers", file_pattern),
       :view       => File.join(ROOT_EXT, "/views", file_pattern)
     }
-    
-    APP = Rack::Builder.new {
-      use Rack::CommonLogger
-      use Rack::ShowExceptions
-      }
       
     class << self
       
@@ -49,21 +43,23 @@ module Lamed
       end
     
       def camelize_ext_subdir(subdir)
-        ext_subdir = subdir.split(ROOT_EXT)[1]
-        camelized_ext_subdir = camelize_path ext_subdir
+        ext_subdir = subdir.split(ROOT_EXT + "/controllers")[1]
+        camelized_ext_subdir = camelize_path ext_subdir if ext_subdir
         return camelized_ext_subdir
       end
     
       def create_object_from_camelized_path(camelized_ext_subdir)
-        klass = Lamed
-        camelized_ext_subdir.each { |symbol|
-          if klass.constants.include?(symbol)
-            klass_prime = klass.const_get(symbol)
-          else 
-            klass_prime = klass.const_set(symbol, Module.new)
+        klass = Lamed::Controller
+        if camelized_ext_subdir
+          camelized_ext_subdir.each do |symbol|
+            if klass.constants.include?(symbol)
+              klass_prime = klass.const_get(symbol)
+            else 
+              klass_prime = klass.const_set(symbol, Module.new)
+            end
+            klass = klass_prime
           end
-          klass = klass_prime
-        }
+        end
         return klass
       end
     
@@ -76,17 +72,16 @@ module Lamed
       end
     
       def create_view_path(camelized_ext_subdir)
-        camelized_ext_subdir_prime = camelized_ext_subdir.dup; camelized_ext_subdir_prime.delete_at(0)
-        camelized_ext_subdir_prime.unshift(:View)
-        view_path = File.join(ROOT_EXT, uncamelize_path(camelized_ext_subdir_prime))
+        camelized_ext_subdir_dup = camelized_ext_subdir.nil? ? [] : camelized_ext_subdir.dup
+        view_path = File.join(VIEW_PATH, uncamelize_path(camelized_ext_subdir_dup))
         return view_path
       end
     
       # Load new controller(s) into new klass(es) as defined by their path.
       # First load the files then build the class/modules(klass) from the path.
-      # Then move the newly created objects into the newly built klass.
+      # Then move the newly created objects into the newly built class.
       # Finally, remove the newly loaded objects from Object.
-      # Change the path= for controllers to the location of the mustache templates. 
+      # Change the +path=+ for the new controllers to the location of the mustache templates +VIEW_PATH+. 
       def load_controller_into_new_class(subdir, file_name)
         orig_object_constants = Object.constants.dup
         load_new_object(subdir, file_name)
@@ -133,9 +128,7 @@ module Lamed
           klass.const_set(o, o_klass)
           Object.instance_eval { remove_const o }
         end
-      end
-          
+      end    
     end
-    
   end
 end

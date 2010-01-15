@@ -66,7 +66,5 @@ module Lamed
       end
       return res
     end
-
   end
-
 end

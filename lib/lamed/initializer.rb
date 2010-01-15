@@ -8,7 +8,6 @@ require 'lib/lamed/object_loader'
 
 module Lamed
   
-  
   # Build configurations from yaml files  
   if defined?(ROOT)
     OPTIONS = {
@@ -33,7 +32,6 @@ module Lamed
   end
   
   class << self
-
     # Set up logging
     def initialize_logger
       if defined?(SYS_OPTIONS)
@@ -50,13 +48,16 @@ module Lamed
             logs.level = Logger::WARN
           end
         rescue
-          puts "The log path #{@log_path} does not exist or is not writable."
-          puts "Log messages will be sent to STANDARD ERROR"
-          logs = Logger.new(STDERR)
+          logs = nil
         end
       end
+      if logs.nil?
+        puts "The log path #{@log_path} does not exist or is not writable."
+        puts "Log messages will be sent to STANDARD ERROR"
+        logs = Logger.new(STDERR)
+      end
       @logger = logs
-      logs.warn("Logging level is set to #{logs.level}")
+      logs.warn("Logging level is set to #{@logger.level}")
       return @logger
     end
     
@@ -79,7 +80,6 @@ module Lamed
     def load_model
      ObjectLoader.load_model_object
     end
-    
   end
   
   if defined?(SYS_OPTIONS)
@@ -89,5 +89,5 @@ module Lamed
     load_lib
   end
   initialize_logger
-
+  
 end

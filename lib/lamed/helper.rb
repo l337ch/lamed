@@ -1,7 +1,6 @@
 module Lamed
   
   module Helper
-    
     # -=-=-=-= Hash Helper =-=-=-=-
     # Changes keys that are strings in symbols.  Goes two deep.
     def symbolize_hash_keys(hash = self)
@@ -88,7 +87,5 @@ module Lamed
       }
       return new_hash
     end
-    
   end
-  
 end

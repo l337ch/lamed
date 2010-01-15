@@ -1,11 +1,10 @@
 LAME_ROOT =  File.join(File.dirname(__FILE__), '..')
-ROOT = File.join(LAME_ROOT, "/spec/fixtures")
+ROOT = File.join(LAME_ROOT, "/spec/examples")
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 require 'rack'
 require 'lib/lamed/initializer'
 
-module Lamed
   
   describe "Initialize all Lamed Objects" do
     it "should initialize the logger to STDERR" do
@@ -25,4 +24,3 @@ module Lamed
     
   end
   
-end
