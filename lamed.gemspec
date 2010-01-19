@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{lamed}
-  s.version = "0.1.2"
+  s.version = "0.1.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Lee Chang"]
-  s.date = %q{2010-01-12}
+  s.date = %q{2010-01-19}
   s.description = %q{Yet another LaMe Ruby Web Framework}
   s.email = %q{leetchang@gmail.com}
   s.extra_rdoc_files = [
@@ -23,23 +23,27 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "lamed.gemspec",
      "lib/lamed.rb",
      "lib/lamed/controller.rb",
      "lib/lamed/helper.rb",
      "lib/lamed/initializer.rb",
-     "lib/lamed/lib.rb",
      "lib/lamed/main.rb",
-     "lib/lamed/mysql.rb",
+     "lib/lamed/model.rb",
      "lib/lamed/object_loader.rb",
-     "lib/lamed/record.rb",
      "lib/lamed/redis.rb",
-     "spec/fixtures/conf/config.yml",
-     "spec/fixtures/conf/database.yml",
-     "spec/fixtures/ext/controller/first_controller.rb",
-     "spec/fixtures/ext/controller/second/second_controller.rb",
-     "spec/fixtures/ext/controller/second/third_controller.rb",
-     "spec/fixtures/ext/record/bar_record.rb",
-     "spec/fixtures/ext/record/foo_record.rb",
+     "spec/examples/conf/config.yml",
+     "spec/examples/conf/database.yml",
+     "spec/examples/config.ru",
+     "spec/examples/ext/controllers/hello_world.rb",
+     "spec/examples/ext/controllers/lamest/bar.rb",
+     "spec/examples/ext/controllers/lamest/foo.rb",
+     "spec/examples/ext/models/bar_model.rb",
+     "spec/examples/ext/models/foo_model.rb",
+     "spec/examples/ext/views/hello_world.mustache",
+     "spec/examples/ext/views/lamest/bar.mustache",
+     "spec/examples/ext/views/lamest/foo.mustache",
+     "spec/examples/lib/foo_lib.rb",
      "spec/helpers_spec.rb",
      "spec/initializer_spec.rb",
      "spec/lame_spec.rb",
@@ -53,11 +57,12 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{Get LaMeD}
   s.test_files = [
-    "spec/fixtures/ext/controller/first_controller.rb",
-     "spec/fixtures/ext/controller/second/second_controller.rb",
-     "spec/fixtures/ext/controller/second/third_controller.rb",
-     "spec/fixtures/ext/record/bar_record.rb",
-     "spec/fixtures/ext/record/foo_record.rb",
+    "spec/examples/ext/controllers/hello_world.rb",
+     "spec/examples/ext/controllers/lamest/bar.rb",
+     "spec/examples/ext/controllers/lamest/foo.rb",
+     "spec/examples/ext/models/bar_model.rb",
+     "spec/examples/ext/models/foo_model.rb",
+     "spec/examples/lib/foo_lib.rb",
      "spec/helpers_spec.rb",
      "spec/initializer_spec.rb",
      "spec/lame_spec.rb",
