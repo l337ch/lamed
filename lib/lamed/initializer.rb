@@ -69,6 +69,10 @@ module Lamed
       @logger
     end
     
+    def opts
+      @opts = SYS_OPTIONS
+    end
+    
     def load_lib
       Dir[ROOT + '/lib/**/*.rb'].each {|f| load f}
     end

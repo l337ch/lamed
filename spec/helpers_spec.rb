@@ -24,7 +24,7 @@ module Lamed
       string = "foo_bar"
       cameled_string = camelize_string string
       cameled_string.should == "FooBar"
-    end
+     end
   
     it "should uncamelize a cameled string into an uncameled _ seperated string" do
       string = "FooBar"
