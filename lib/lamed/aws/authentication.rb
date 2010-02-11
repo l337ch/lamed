@@ -34,11 +34,6 @@ module Aws
       request.inject({}) { |h,(k,v)| h[aws_escape(k)] = aws_escape(v);h }
     end
     
-    def generate_query_string(params, opts = {})
-      request_hash = aws_escape_params(params, opts)
-      request_hash.collect { |k,v| k + '=' + v }.join('&')
-    end
-    
     # Create an AWS signature
     # From: http://docs.amazonwebservices.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/
     # String to sign:
@@ -48,14 +43,25 @@ module Aws
     #   CanonicalizedQueryString
     # Calculate an RFC 2104-compliant HMAC with the string you just created, your Secret Access Key as the key.
     # We use SHA256 as the hash algorithm.
-    # Do not encode the signature here.  It will be encoded when it's included in the query string.
-    def aws_signature(params, httpverb, host, requesturi)
-      sorted_params = params.sort.inject({}) { |h,(k,v)| h[k] = v;h }
-      query_string = generate_query_string sorted_params
-      puts query_string
-      sign("#{httpverb}\n#{host}\n#{requesturi}\n#{query_string}")
+    # Do not encode the signature here.  The string will be encoded when it's included in the query string.
+    #def aws_signature(httpverb, host, requesturi, params = {})
+    #  sorted_params = params.sort.inject({}) { |h,(k,v)| h[k] = v;h }
+    #  query_string = aws_escape_params(sorted_params).collect { |k,v| k + '=' + v }.join('&')
+    #  string_to_sign = "#{httpverb.to_s.upcase}\n#{host}\n#{requesturi}\n#{query_string}"
+    #  puts "STRING TO SIGN is " + string_to_sign.inspect
+    #  sign(string_to_sign)
+    #end
+    def aws_signature(string_to_sign)
+      sign(string_to_sign)
     end
-
+    
+    def generate_string_to_sign(httpverb, host, uri, params = {})
+      verb = httpverb.to_s.upcase
+      sorted_params = params.sort.inject({}) { |h,(k,v)| h[k] = v;h }
+      query_string = aws_escape_params(sorted_params).collect { |k,v| k + '=' + v }.join('&')
+      "#{verb}\n#{host}\n#{uri}\n#{query_string}"
+    end
+    
     def generate_request(action, params = {})
       request = {
         'Action' => action,
@@ -66,10 +72,17 @@ module Aws
       request.merge(default_params).merge(params)
     end
     
-    def get_query_string(action, params = {})
+    
+    def generate_query_string(params, opts = {})
+      query_hash = aws_escape_params(params, opts)
+      query_hash.collect { |k,v| k + '=' + v }.join('&')
+    end
+     
+    def generate_query(action, params = {})
       request_hash = generate_request(action, params)
-      puts "Request hash is " + request_hash.inspect
-      signature = aws_signature(request_hash, 'GET', @uri.host, @uri.path)
+      uri = url_path || "/"
+      string_to_sign = generate_string_to_sign(:get, @host, "/", request_hash)
+      signature = aws_signature(string_to_sign)
       generate_query_string(request_hash, 'Signature' => signature)
     end
   end

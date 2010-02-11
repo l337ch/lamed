@@ -5,34 +5,66 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 ENV['AMAZON_ACCESS_KEY_ID'] = '1NK7GFJZMZPXRPE6S802'
 ENV['AMAZON_SECRET_ACCESS_KEY'] = 'Qq97jbMRfHK6zGns8RmT5nRTdHVbKmc7CNBWHexl'
-
+  
 require 'lib/lamed/aws/aws'
 require 'lib/lamed/aws/authentication'
 require 'lib/lamed/aws/sqs'
 
 include Aws
 
-describe "Log into AWS SQS" do
-  it "should initialize a queue" do
-    sqs = Aws::Sqs::Queue.new('test')
-  end
+describe Aws::Sqs::Queue do
+  #it "should initialize a queue" do
+  #  sqs = Sqs::Queue.new('prod_scs_completed_imports')
+  #end
   
   it "should generate a request hash" do
-    sqs = Sqs::Queue.new('test')
-    sqs.generate_request('Get').should == {"Action"=>"Get", "SignatureMethod"=>"HmacSHA256", "AWSAccessKeyId"=>'pass_me',
-                                            "SignatureVersion"=>"2", "Expires"=>60, "Version"=>"2009-02-01"}
+    sqs = Sqs::Queue.new
+    sqs.generate_request('ListQueues').should == {
+                                                   "Action"           => "ListQueues",
+                                                   "SignatureMethod"  => "HmacSHA256",
+                                                   "AWSAccessKeyId"   => ENV['AMAZON_ACCESS_KEY_ID'],
+                                                   "SignatureVersion" => "2",
+                                                   "Expires"          => sqs.expires,
+                                                   "Version"          => "2009-02-01"
+                                                   }
   end
-  
+
+  it "should generate the string that will be signed" do
+    sqs = Sqs::Queue.new
+    params = {
+               "Action"           => "ListQueues",
+               "SignatureMethod"  => "HmacSHA256",
+               "AWSAccessKeyId"   => ENV['AMAZON_ACCESS_KEY_ID'],
+               "SignatureVersion" => "2",
+               "Expires"          => "2010-02-10T21:24:40Z",
+               "Version"          => "2009-02-01"
+               }
+    sqs.generate_string_to_sign(:get, 'queue.amazonaws.com', '/', params).should == "GET\nqueue.amazonaws.com\n/\nAWSAccessKeyId=" +
+                                                                                    "1NK7GFJZMZPXRPE6S802&Action=ListQueues&Expires=" + 
+                                                                                    "2010-02-10T21%3A24%3A40Z&SignatureMethod=" + 
+                                                                                    "HmacSHA256&SignatureVersion=2&Version=2009-02-01"
+  end
+
   it "should generate a request signature" do
-    sqs = Sqs::Queue.new('test')
-    params = sqs.generate_request('Get')
-    sqs.aws_signature(params, 'GET', 'queue.amazonaws.com', '').should ==
-                                                                '2bfq0e%2FkOnq1Rm6iT4S%2BPEJXfTABSBMZtTu1UmgXmVY%3D'
+    sqs = Sqs::Queue.new
+    string_to_sign = "GET\nqueue.amazonaws.com\n/\nAWSAccessKeyId=" +
+                     "1NK7GFJZMZPXRPE6S802&Action=ListQueues&Expires=" + 
+                     "2010-02-10T21%3A24%3A40Z&SignatureMethod=" + 
+                     "HmacSHA256&SignatureVersion=2&Version=2009-02-01"
+    sqs.aws_signature(string_to_sign).should == 'E+6Oho7VE0EOrV2KYMTN1hOvVnT5LZ2LxLTNGXCyCTk='
   end
-  
-  it "should generate a SQS query string with queue list request" do
-    sqs = Aws::Sqs::Queue.new('')
-    sqs.get_query_string('ListQueues', 'QueueNamePrefix' => 'prod').should == ''
+
+  it "should generate a SQS query hash with queue list request" do
+    sqs = Aws::Sqs::Queue.new
+    @list_queue_query_string = sqs.generate_query("ListQueues", 'QueueNamePrefix' => 'prod')
+    @list_queue_query_string.should == ''
   end
-  
+end
+
+describe "Get the url path for a queue" do
+  it "should get a url path for a SQS queue" do
+    sqs = Sqs::Queue.new('prod_scs_completed_imports')
+    sqs.path.should == '/002611861940/prod_scs_completed_imports'
+    #sqs.get_http_path('prod_scs_completed_imports').should == '/002611861940/prod_scs_completed_imports'
+  end
 end
