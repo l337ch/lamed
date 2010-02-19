@@ -5,6 +5,9 @@ require 'memcached'
 require 'cgi'
 require 'lib/lamed/helper'
 require 'lib/lamed/object_loader'
+require 'lib/lamed/aws/aws'
+require 'lib/lamed/aws/authentication'
+require 'lib/lamed/aws/sqs'
 
 module Lamed
   

@@ -26,12 +26,17 @@ module Aws
     # Escape the nonreserved AWS characters. Use this instead of URI.escape or CGI.escape
     # See String#unpack for hex nibbles: http://ruby-doc.org/core/classes/String.html#M000760
     def aws_escape(string)
-      string.to_s.gsub(/([^a-zA-Z0-9._\-~]+)/n) { '%' + $1.unpack('H2' * $1.size).join.upcase }
+      string.to_s.gsub(/([^a-zA-Z0-9._~-]+)/n) { '%' + $1.unpack('H2' * $1.size).join.upcase }
     end
     
     def aws_escape_params(params, opts = {})
       request = params.merge(opts)
       request.inject({}) { |h,(k,v)| h[aws_escape(k)] = aws_escape(v);h }
+    end
+    
+    def uri_escape_params(params, opts = {})
+      request = params.merge(opts)
+      request.inject({}) { |h,(k,v)| h[URI.escape(k.to_s)] = URI.escape(v.to_s);h }
     end
     
     # Create an AWS signature
@@ -52,6 +57,7 @@ module Aws
     #  sign(string_to_sign)
     #end
     def aws_signature(string_to_sign)
+      puts "STRING_TO_SIGN ******* " + string_to_sign.inspect
       sign(string_to_sign)
     end
     
@@ -74,14 +80,17 @@ module Aws
     
     
     def generate_query_string(params, opts = {})
-      query_hash = aws_escape_params(params, opts)
-      query_hash.collect { |k,v| k + '=' + v }.join('&')
+      query_hash = params.merge(opts)
+      query_string = URI.escape(query_hash.collect { |k,v| k.to_s + '=' + v.to_s }.join('&'))
+      query_string.gsub(/\+/, "%2B")
     end
      
     def generate_query(action, params = {})
       request_hash = generate_request(action, params)
       uri = url_path || "/"
-      string_to_sign = generate_string_to_sign(:get, @host, "/", request_hash)
+      uri = uri + "/" unless uri == "/"
+      puts "URI is ??????????????" + uri.inspect
+      string_to_sign = generate_string_to_sign(:get, @host, uri, request_hash)
       signature = aws_signature(string_to_sign)
       generate_query_string(request_hash, 'Signature' => signature)
     end

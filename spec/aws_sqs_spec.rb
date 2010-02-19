@@ -30,7 +30,7 @@ describe Aws::Sqs::Queue do
   end
 
   it "should generate the string that will be signed" do
-    sqs = Sqs::Queue.new
+    sqs = Sqs::Queue.new("test")
     params = {
                "Action"           => "ListQueues",
                "SignatureMethod"  => "HmacSHA256",
@@ -46,7 +46,7 @@ describe Aws::Sqs::Queue do
   end
 
   it "should generate a request signature" do
-    sqs = Sqs::Queue.new
+    sqs = Sqs::Queue.new("test")
     string_to_sign = "GET\nqueue.amazonaws.com\n/\nAWSAccessKeyId=" +
                      "1NK7GFJZMZPXRPE6S802&Action=ListQueues&Expires=" + 
                      "2010-02-10T21%3A24%3A40Z&SignatureMethod=" + 
@@ -55,16 +55,46 @@ describe Aws::Sqs::Queue do
   end
 
   it "should generate a SQS query hash with queue list request" do
-    sqs = Aws::Sqs::Queue.new
+    sqs = Aws::Sqs::Queue.new("test")
     @list_queue_query_string = sqs.generate_query("ListQueues", 'QueueNamePrefix' => 'prod')
     @list_queue_query_string.should == ''
   end
-end
 
-describe "Get the url path for a queue" do
+  it "should create a new queue" do
+    sqs = Sqs::Queue.new
+    sqs.create("test_scs_completed_imports").should == "test"
+  end
+  
+  it "should list a queue's attribute" do
+    sqs = Sqs::Queue.new("test_scs_completed_imports")
+    sqs.attributes.should == "Test"
+  end
+  
   it "should get a url path for a SQS queue" do
-    sqs = Sqs::Queue.new('prod_scs_completed_imports')
-    sqs.path.should == '/002611861940/prod_scs_completed_imports'
+    sqs = Sqs::Queue.new('test_scs_completed_imports')
+    sqs.path.should == '/002611861940/test_scs_completed_imports'
     #sqs.get_http_path('prod_scs_completed_imports').should == '/002611861940/prod_scs_completed_imports'
   end
+  
+  it "should send a message" do
+    msg = "This is a test"
+    sqs = Sqs::Queue.new("test_scs_completed_imports")
+    sqs.send(msg).should == "test"
+  end
+  
+  it "should receive the test message" do
+    sqs = Sqs::Queue.new("test_scs_completed_imports")
+    sqs.receive
+    message = sqs.message
+    @@receipt_handle = message["ReceiptHandle"]
+    message.should == "test"
+  end
+  
+  it "should delete the message from the queue" do
+    puts "RECEIPT HANDLE ******************** " + @@receipt_handle
+    receipt_handle = @@receipt_handle
+    sqs = Sqs::Queue.new("test_scs_completed_imports")
+    sqs.delete(receipt_handle).should == "test"
+  end
+  
 end

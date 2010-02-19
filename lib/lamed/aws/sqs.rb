@@ -12,26 +12,21 @@ module Aws
       
       REQUEST_TTL = 600
       
-      attr_reader :host, :path, :expires
+      attr_reader :host, :path, :expires, :message, :message_body, :message_attribute
       
       def initialize(queue_name = nil)
-        @host = DEFAULT_HOST
-        @path = queue_name.nil? ? "/" : get_http_path(queue_name)
+        @host       = DEFAULT_HOST
+        @queue_name = queue_name
+        @path = queue_name.nil? ? "/" : get_http_path if @path.nil?
       end
-      
-      # First step is to get the URL path for a SQS queue
  
-      def get_http_path(queue_name)
-        queue_url = ''
+      def get_http_path
         action = 'ListQueues'
-        params = {
-          'QueueNamePrefix' => queue_name
-        }
-        params.merge!(default_params)
-        req = "/?" + generate_query(action, params)
-        res = Typhoeus::Request.get(@host + req)
-        xml_doc = XML.parse res.body
+        params = { "QueueNamePrefix" => @queue_name }.merge(default_params)
+        path = url_path || ""
+        xml_doc = http_get_xml(@host, path, generate_query(action, params))
         url = (xml_doc["ListQueuesResponse"]["ListQueuesResult"]["QueueUrl"])
+        url = url[0] if Array === url
         URI.parse(url).path
       end
       
@@ -39,8 +34,70 @@ module Aws
         @path
       end
       
-      def list_queues(prefix = nil)
-        
+      # List all the queues that start with the prefix.
+      def list_queues(prefix = "")
+        action = "ListQueues"
+        @path = "/"
+        available_queues = Array.new
+        xml_doc = http_get_xml(@host, path, generate_query(action, default_params))
+        if xml_doc["ListQueuesResponse"]["ListQueuesResult"]["QueueUrl"]
+          xml_doc["ListQueuesResponse"]["ListQueuesResult"]["QueueUrl"].each do |url|
+            available_queues << url.split("/").last
+          end
+        end
+        available_queues
+      end
+      
+      def attributes
+        action = "GetQueueAttributes"
+        params = { "AttributeName" =>"All" }.merge(default_params)
+        http_get_xml(@host, @path, generate_query(action, params))
+      end
+      
+      def create(queue_name)
+        action = "CreateQueue"
+        params = { "QueueName" => queue_name}
+        params.merge!(default_params)
+        @path = "/"
+        http_get_xml(@host, @path, generate_query(action, params))
+      end
+      
+      def send(message, send_params = nil)
+        action = "SendMessage"
+        params = { "MessageBody" => message }.merge(default_params)
+        #req = url_path + "?" + generate_query(action, params)
+        #puts "REQEUST IS ++++++++++++++++++++++" + req.inspect
+        #res = Typhoeus::Request.get(@host + req)
+        http_get_xml(@host, url_path, generate_query(action, params))
+      end
+      
+      def receive(receive_params = {})
+        action = "ReceiveMessage"
+        params = { 
+                  "MaxNumberOfMessages" => receive_params[:number] || 1,
+                  "AttributeName"       => "All" }
+        params["VisibilityTimeout"] = receive_params[:timeout] if receive_params[:timeout]
+        params.merge!(default_params)
+        #req = url_path + "?" + generate_query(action, params)
+        #res = Typhoeus::Request.get(@host + req)
+        xml = http_get_xml(@host, url_path, generate_query(action, params))
+        message = xml["ReceiveMessageResponse"]["ReceiveMessageResult"]["Message"]
+        @message_body = message["Body"]
+        @message_attribute = message["Attribute"]
+        @message = message
+      end
+      
+      def delete(receipt_handle)
+        action = "DeleteMessage"
+        #unescaped_handle = URI.unescape(receipt_handle)
+        params = { "ReceiptHandle" => receipt_handle }.merge(default_params)
+        http_get_xml(@host, url_path, generate_query(action, params))
+      end
+      
+      def delete_queue
+        action = "DeleteQueue"
+        params = default_params
+        http_get_xml(@host, url_path, generate_query(action, params))
       end
       
       # +time+ is expressed as a string.
@@ -54,7 +111,7 @@ module Aws
       
       def default_params
         request = {
-          'Expires' => (expires),
+          'Expires' => expires,
           'Version' => API_VERSION
         }
       end
