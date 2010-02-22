@@ -65,9 +65,6 @@ module Aws
       def send(message, send_params = nil)
         action = "SendMessage"
         params = { "MessageBody" => message }.merge(default_params)
-        #req = url_path + "?" + generate_query(action, params)
-        #puts "REQEUST IS ++++++++++++++++++++++" + req.inspect
-        #res = Typhoeus::Request.get(@host + req)
         http_get_xml(@host, url_path, generate_query(action, params))
       end
       
@@ -78,8 +75,6 @@ module Aws
                   "AttributeName"       => "All" }
         params["VisibilityTimeout"] = receive_params[:timeout] if receive_params[:timeout]
         params.merge!(default_params)
-        #req = url_path + "?" + generate_query(action, params)
-        #res = Typhoeus::Request.get(@host + req)
         xml = http_get_xml(@host, url_path, generate_query(action, params))
         message = xml["ReceiveMessageResponse"]["ReceiveMessageResult"]["Message"]
         @message_body = message["Body"]

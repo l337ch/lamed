@@ -26,7 +26,7 @@ module Aws
     # Escape the nonreserved AWS characters. Use this instead of URI.escape or CGI.escape
     # See String#unpack for hex nibbles: http://ruby-doc.org/core/classes/String.html#M000760
     def aws_escape(string)
-      string.to_s.gsub(/([^a-zA-Z0-9._~-]+)/n) { '%' + $1.unpack('H2' * $1.size).join.upcase }
+      string.to_s.gsub(/([^a-zA-Z0-9._~-]+)/n) { '%' + $1.unpack('H2' * $1.size).join('%').upcase }
     end
     
     def aws_escape_params(params, opts = {})
@@ -57,7 +57,6 @@ module Aws
     #  sign(string_to_sign)
     #end
     def aws_signature(string_to_sign)
-      puts "STRING_TO_SIGN ******* " + string_to_sign.inspect
       sign(string_to_sign)
     end
     
@@ -89,8 +88,8 @@ module Aws
       request_hash = generate_request(action, params)
       uri = url_path || "/"
       uri = uri + "/" unless uri == "/"
-      puts "URI is ??????????????" + uri.inspect
       string_to_sign = generate_string_to_sign(:get, @host, uri, request_hash)
+      puts "STRING TO SIGN ++++++++++++ " + string_to_sign.inspect
       signature = aws_signature(string_to_sign)
       generate_query_string(request_hash, 'Signature' => signature)
     end

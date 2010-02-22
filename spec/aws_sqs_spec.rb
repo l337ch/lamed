@@ -91,7 +91,6 @@ describe Aws::Sqs::Queue do
   end
   
   it "should delete the message from the queue" do
-    puts "RECEIPT HANDLE ******************** " + @@receipt_handle
     receipt_handle = @@receipt_handle
     sqs = Sqs::Queue.new("test_scs_completed_imports")
     sqs.delete(receipt_handle).should == "test"
