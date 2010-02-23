@@ -12,7 +12,7 @@ module Aws
       
       REQUEST_TTL = 600
       
-      attr_reader :host, :path, :expires, :message, :message_body, :message_attribute
+      attr_reader :host, :path, :expires
       
       def initialize(queue_name = nil)
         @host       = DEFAULT_HOST
@@ -76,10 +76,32 @@ module Aws
         params["VisibilityTimeout"] = receive_params[:timeout] if receive_params[:timeout]
         params.merge!(default_params)
         xml = http_get_xml(@host, url_path, generate_query(action, params))
-        message = xml["ReceiveMessageResponse"]["ReceiveMessageResult"]["Message"]
-        @message_body = message["Body"]
-        @message_attribute = message["Attribute"]
-        @message = message
+        
+        if !xml["ReceiveMessageResponse"]["ReceiveMessageResult"].nil?
+          message = xml["ReceiveMessageResponse"]["ReceiveMessageResult"]["Message"]
+          @message_body = message["Body"]
+          @message_attribute = message["Attribute"]
+          @receipt_handle = message["ReceiptHandle"]
+          @message = message
+        else
+          nil
+        end
+      end
+      
+      def receipt_handle
+        @receipt_handle
+      end
+      
+      def message
+        @message
+      end
+      
+      def message_body
+        @message_body
+      end
+      
+      def message_attributes
+        @message_attribute
       end
       
       def delete(receipt_handle)

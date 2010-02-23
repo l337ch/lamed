@@ -19,7 +19,6 @@ module AWS
   def http_get_xml(host, path, request_params)
     path = path == "/" ? path : path + "/"
     req = path + "?" + request_params
-    puts "REQUEST IS +++++++++++++++ " + req
     res = Request.get(@host + req)
     XML.parse res.body
   end

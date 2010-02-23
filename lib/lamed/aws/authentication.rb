@@ -89,7 +89,6 @@ module Aws
       uri = url_path || "/"
       uri = uri + "/" unless uri == "/"
       string_to_sign = generate_string_to_sign(:get, @host, uri, request_hash)
-      puts "STRING TO SIGN ++++++++++++ " + string_to_sign.inspect
       signature = aws_signature(string_to_sign)
       generate_query_string(request_hash, 'Signature' => signature)
     end
