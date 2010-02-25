@@ -4,11 +4,14 @@ require 'lib/lamed/redis'
 module Lamed
   
   module Model
-    
-    #include Lamed
-    
+        
     LAME_ROOT = ::LAME_ROOT unless defined?(LAME_ROOT)
   
+  end
+  
+  # Support for DataMapper
+  class DataMapper
+    include DataMapper::Resource
   end
   
   class MySQL < Mysql
