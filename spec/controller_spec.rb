@@ -66,7 +66,7 @@ module Lamed
     end
     
     it "should return a response" do
-      controller.response(env).should == 'Hello World'
+        controller.response.should == 'Hello World'
     end
     
     it "Controller.call" do

@@ -53,7 +53,7 @@ module Lamed
       #@env = env unless defined?(@env)
       env[:query] = self.params(env['QUERY_STRING'])
       env[:path] = self.uri(env['SCRIPT_NAME'])
-      response(env)
+      response
       resp = req_params
       status_code = resp[:status_code] || 200
       content_type = resp[:content_type] || "text/html"
@@ -63,7 +63,7 @@ module Lamed
     def request(*args)
     end
   
-    def response(env)
+    def response
      req_params[:body] = self.render
      #return @req_params
     end
