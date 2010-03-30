@@ -1,4 +1,7 @@
 require 'mysql'
+require 'dm-core'
+require 'dm-types'
+require 'dm-aggregates'
 require 'lib/lamed/redis'
 
 module Lamed
@@ -10,8 +13,18 @@ module Lamed
   end
   
   # Support for DataMapper
-  class DataMapper
-    include DataMapper::Resource
+  class DM
+    
+    # Setup the database connection using DataMapper
+    def initialize(params = {})
+      host          = params[:host]      || 'localhost'
+      port          = (params[:port]     || 3306).to_i
+      user          = params[:username]  || 'root'
+      password      = params[:password]  || 'pwd'
+      database      = params[:database]  || 'ithingy'
+      adapter       = params[:adapter]   || 'mysql'
+      DataMapper.setup(:default, "#{adapter}://#{user}:#{password}@#{host}:#{port}/#{database}")
+    end
   end
   
   class MySQL < Mysql
