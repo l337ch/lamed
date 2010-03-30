@@ -60,6 +60,7 @@ module Lamed
       [status_code, {"Content-Type" => content_type}, [resp[:body]]]
     end
     
+    # This is just a reminder that I need to add something here
     def request(*args)
     end
   

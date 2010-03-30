@@ -1,17 +1,29 @@
 LAME_ROOT =  File.join(File.dirname(__FILE__), '..')
-ROOT = File.join(LAME_ROOT, "/spec/examples")
+#ROOT = File.join(LAME_ROOT, "/spec/examples")
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 require 'rack'
-require File.join(File.dirname(__FILE__), '../lib/lamed/model')
-require File.join(File.dirname(__FILE__), "../lib/lamed/helper")
-require File.join(File.dirname(__FILE__), '../lib/lamed/controller')
-
-include Lamed
+require 'spec_helper'
+require 'lib/lamed/model'
+require 'lib/lamed/helper'
+require 'lib/lamed/controller'
 
 module Lamed
   
   describe Controller do
+    
+    it "Controller should exist" do
+      Controller.should == Lamed::Controller
+    end
+    
+    it "Controller should have instance methods" do
+      Controller.instance_methods(false).sort.should == [:call, :content_type, :params, :req_params, :request, :response, :self_path, :uri, :user_agent]
+    end
+    
+    it "Controller should have methods" do
+      Controller.methods(false).sort.should == []
+    end
+    
     let(:controller) { Controller.new }
     let(:env) { { "GATEWAY_INTERFACE"=>"CGI/1.1", "PATH_INFO"=>"", "QUERY_STRING"=>"hello=test&foo=bar",
            "REMOTE_ADDR"=>"127.0.0.1", "REMOTE_HOST"=>"radio.local", "REQUEST_METHOD"=>"GET",
