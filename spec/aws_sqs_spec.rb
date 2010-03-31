@@ -57,29 +57,28 @@ describe Aws::Sqs::Queue do
   it "should generate a SQS query hash with queue list request" do
     sqs = Aws::Sqs::Queue.new("test")
     @list_queue_query_string = sqs.generate_query("ListQueues", 'QueueNamePrefix' => 'prod')
-    @list_queue_query_string.should == ''
+    @list_queue_query_string.should =~ /Action=ListQueues&SignatureMethod=HmacSHA256&AWSAccessKeyId=1NK7GFJZMZPXRPE6S802&SignatureVersion=2&Expires=/
   end
 
   it "should create a new queue" do
     sqs = Sqs::Queue.new
-    sqs.create("test_scs_completed_imports").should == "test"
+    sqs.create("test_scs_completed_imports").inspect.should =~ /CreateQueueResponse/
   end
   
   it "should list a queue's attribute" do
     sqs = Sqs::Queue.new("test_scs_completed_imports")
-    sqs.attributes.should == "Test"
+    sqs.attributes.inspect.should =~ /GetQueueAttributesResponse/
   end
   
   it "should get a url path for a SQS queue" do
     sqs = Sqs::Queue.new('test_scs_completed_imports')
     sqs.path.should == '/002611861940/test_scs_completed_imports'
-    #sqs.get_http_path('prod_scs_completed_imports').should == '/002611861940/prod_scs_completed_imports'
   end
   
   it "should send a message" do
     msg = "This is a test"
     sqs = Sqs::Queue.new("test_scs_completed_imports")
-    sqs.send(msg).should == "test"
+    sqs.send(msg).inspect.should =~ /SendMessageResponse/
   end
   
   it "should receive the test message" do
@@ -87,13 +86,13 @@ describe Aws::Sqs::Queue do
     sqs.receive
     message = sqs.message
     @@receipt_handle = message["ReceiptHandle"]
-    message.should == "test"
+    message.inspect.should =~ /MessageId/
   end
   
   it "should delete the message from the queue" do
     receipt_handle = @@receipt_handle
     sqs = Sqs::Queue.new("test_scs_completed_imports")
-    sqs.delete(receipt_handle).should == "test"
+    sqs.delete(receipt_handle).inspect.should =~ /DeleteMessageResponse/
   end
   
 end

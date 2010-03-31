@@ -15,20 +15,21 @@ module Lamed
   # Support for DataMapper
   class DM
     
-    include DataMapper::Resource
+    #include DataMapper::Resource
+    include DataMapper
     
     # Setup the database connection using DataMapper
     def initialize(params = {})
-      host          = params[:host]      || 'localhost'
-      port          = (params[:port]     || 3306).to_i
-      user          = params[:username]  || 'root'
-      password      = params[:password]  || 'pwd'
-      database      = params[:database]  || 'ithingy'
-      adapter       = params[:adapter]   || 'mysql'
+      @host          = params[:host]      || 'localhost'
+      @port          = (params[:port]     || 3306).to_i
+      @user          = params[:username]  || 'root'
+      @password      = params[:password]  || 'pwd'
+      @database      = params[:database]  || 'ithingy'
+      @adapter       = params[:adapter]   || 'mysql'
     end
     
     def connect
-      setup(:default, "#{adapter}://#{user}:#{password}@#{host}:#{port}/#{database}")
+      DataMapper.setup(:default, "#{@adapter}://#{@user}:#{@password}@#{@host}:#{@port}/#{@database}")
     end
   end
   

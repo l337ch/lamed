@@ -23,9 +23,21 @@ module Lamed
   
   describe DM do
     
+    let(:dm) { DM.new(:host => 'localhost') }
+    
     it "should intialize DM" do
-      dm = DM.new(:host => 'localhost')
-      dm.instance_variables.should == []
+      #dm = DM.new(:host => 'localhost')
+      dm.inspect.should =~ /Lamed/
+    end
+    
+    it "should connect to the database with defaults" do
+      dm.connect.inspect.should =~ /DataMapper::Adapters::MysqlAdapter/
+    end
+  end
+  
+  describe MySQL do
+    
+    it "should initialize DM" do
     end
   end
 end

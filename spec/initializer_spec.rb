@@ -4,6 +4,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
 require 'rack'
 require 'lib/lamed/initializer'
+require 'spec/examples/ext/models/bar_model'
 
   
 describe "Initialize all Lamed Objects" do
@@ -26,6 +27,16 @@ describe "Initialize all Lamed Objects" do
                                            :MockResponse, :Response, :Auth, :Session, :Adapter, :Builder, :CommonLogger,
                                            :Utils, :Request, :ShowExceptions, :Template, :ContextMiss, :Context].sort
     Object.constants.include?(:FooLib).should == true
+  end  
+end
+
+describe BarModel do
+  it "should load BarModel" do
+    BarModel.new.inspect.should =~ /BarModel @id=nil @title=nil/
+    BarModel.instance_variables.should == [:@valid, :@base_model, :@storage_names, :@default_order, :@descendants, :@relationships, :@properties,
+                                           :@field_naming_conventions, :@paranoid_properties, :@resource_methods]
   end
   
+  it "return title request" do
+  end
 end
