@@ -22,4 +22,7 @@ class Redis
     connect_to_server
   end
   
+  def load
+  end
+  
 end

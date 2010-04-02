@@ -2,7 +2,7 @@ LAME_ROOT =  File.join(File.dirname(__FILE__), '..')
 ROOT = File.join(LAME_ROOT, "/spec/examples")
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..'))
 
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec_helper'
 require 'lib/lamed/model'
 
 module Lamed
@@ -37,7 +37,6 @@ module Lamed
   
   describe MySQL do
     
-    it "should initialize DM" do
-    end
+    it "should initialize DM"
   end
 end
