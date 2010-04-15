@@ -11,7 +11,7 @@ module AWS
   include Typhoeus
   include Crack
   
-  # AWS time xml format: YYYY-MM-DDThh:mm:ssZ
+  # AWS time xml format: YYYY-MM-DDThh:mm:ssZ>  Zone is set to Z or UTC
   def time_xml
     Time.now.utc.xmlschema
   end

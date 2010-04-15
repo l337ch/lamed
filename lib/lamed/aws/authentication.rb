@@ -7,20 +7,20 @@ module Aws
     AMAZON_SECRET_ACCESS_KEY = ENV['AMAZON_SECRET_ACCESS_KEY']
     SIGNATURE_VERSION = '2'
     
-    def new_digest
-      OpenSSL::Digest::Digest.new('sha256')
-    end
-    
-    def sign(string)
-      Base64.encode64(OpenSSL::HMAC.digest(new_digest, aws_secret_access_key, string)).strip
-    end
-    
     def aws_access_key_id
       AMAZON_ACCESS_KEY_ID
     end
     
     def aws_secret_access_key
       AMAZON_SECRET_ACCESS_KEY
+    end
+    
+    def new_digest
+      OpenSSL::Digest::Digest.new('sha256')
+    end
+    
+    def sign(string)
+      Base64.encode64(OpenSSL::HMAC.digest(new_digest, aws_secret_access_key, string)).strip
     end
     
     # Escape the nonreserved AWS characters. Use this instead of URI.escape or CGI.escape
@@ -56,15 +56,24 @@ module Aws
     #  puts "STRING TO SIGN is " + string_to_sign.inspect
     #  sign(string_to_sign)
     #end
-    def aws_signature(string_to_sign)
-      sign(string_to_sign)
-    end
-    
     def generate_string_to_sign(httpverb, host, uri, params = {})
       verb = httpverb.to_s.upcase
       sorted_params = params.sort.inject({}) { |h,(k,v)| h[k] = v;h }
       query_string = aws_escape_params(sorted_params).collect { |k,v| k + '=' + v }.join('&')
       "#{verb}\n#{host}\n#{uri}\n#{query_string}"
+    end
+    
+    def generate_query(action, params = {})
+      request_hash = generate_request(action, params)
+      uri = url_path || "/"
+      uri = uri + "/" unless uri == "/"
+      string_to_sign = generate_string_to_sign(:get, @host, uri, request_hash)
+      signature = aws_signature(string_to_sign)
+      generate_query_string(request_hash, 'Signature' => signature)
+    end
+    
+    def aws_signature(string_to_sign)
+      sign(string_to_sign)
     end
     
     def generate_request(action, params = {})
@@ -81,7 +90,7 @@ module Aws
     def generate_query_string(params, opts = {})
       query_hash = params.merge(opts)
       query_string = URI.escape(query_hash.collect { |k,v| k.to_s + '=' + v.to_s }.join('&'))
-      query_string.gsub(/\+/, "%2B")
+      query_string.gsub(/\+/, "%2B")   #encode pluses correctly 
     end
      
     def generate_query(action, params = {})

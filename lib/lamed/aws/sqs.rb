@@ -19,7 +19,9 @@ module Aws
         @queue_name = queue_name
         @path = queue_name.nil? ? "/" : get_http_path if @path.nil?
       end
- 
+      
+      # Get the queue path using Action = +ListQueues+ and additional param +QueneNamePrefix+.
+      # Example response +/12345678012/exampleQueue+
       def get_http_path
         action = 'ListQueues'
         params = { "QueueNamePrefix" => @queue_name }.merge(default_params)
@@ -31,7 +33,7 @@ module Aws
       end
       
       def url_path
-        @path
+        @path || '/'
       end
       
       # List all the queues that start with the prefix.
