@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{lamed}
-  s.version = "0.1.3"
+  s.version = "0.3.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Lee Chang"]
-  s.date = %q{2010-01-19}
+  s.date = %q{2010-04-15}
   s.description = %q{Yet another LaMe Ruby Web Framework}
   s.email = %q{leetchang@gmail.com}
   s.extra_rdoc_files = [
@@ -25,6 +25,9 @@ Gem::Specification.new do |s|
      "VERSION",
      "lamed.gemspec",
      "lib/lamed.rb",
+     "lib/lamed/aws/authentication.rb",
+     "lib/lamed/aws/aws.rb",
+     "lib/lamed/aws/sqs.rb",
      "lib/lamed/controller.rb",
      "lib/lamed/helper.rb",
      "lib/lamed/initializer.rb",
@@ -44,10 +47,14 @@ Gem::Specification.new do |s|
      "spec/examples/ext/views/lamest/bar.mustache",
      "spec/examples/ext/views/lamest/foo.mustache",
      "spec/examples/lib/foo_lib.rb",
-     "spec/helpers_spec.rb",
-     "spec/initializer_spec.rb",
-     "spec/lame_spec.rb",
-     "spec/object_loader_spec.rb",
+     "spec/lamed/aws/authentication_spec.rb",
+     "spec/lamed/aws/spec.rb",
+     "spec/lamed/aws/sqs_spec.rb",
+     "spec/lamed/controller_spec.rb",
+     "spec/lamed/helper_spec.rb",
+     "spec/lamed/initializer_spec.rb",
+     "spec/lamed/model_spec.rb",
+     "spec/lamed/object_loader_spec.rb",
      "spec/spec.opts",
      "spec/spec_helper.rb"
   ]
@@ -63,10 +70,14 @@ Gem::Specification.new do |s|
      "spec/examples/ext/models/bar_model.rb",
      "spec/examples/ext/models/foo_model.rb",
      "spec/examples/lib/foo_lib.rb",
-     "spec/helpers_spec.rb",
-     "spec/initializer_spec.rb",
-     "spec/lame_spec.rb",
-     "spec/object_loader_spec.rb",
+     "spec/lamed/aws/authentication_spec.rb",
+     "spec/lamed/aws/spec.rb",
+     "spec/lamed/aws/sqs_spec.rb",
+     "spec/lamed/controller_spec.rb",
+     "spec/lamed/helper_spec.rb",
+     "spec/lamed/initializer_spec.rb",
+     "spec/lamed/model_spec.rb",
+     "spec/lamed/object_loader_spec.rb",
      "spec/spec_helper.rb"
   ]
 
